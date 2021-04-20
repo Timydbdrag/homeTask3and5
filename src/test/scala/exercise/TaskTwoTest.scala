@@ -1,6 +1,6 @@
 package exercise
 
-import exercise.TaskTwo.{getResult, getTaxiFacts}
+import exercise.TaskTwo.{calculatePopularBorough, getTaxiFacts}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SparkSession}
 import org.scalatest.flatspec.AnyFlatSpec
@@ -15,7 +15,7 @@ class TaskTwoTest extends AnyFlatSpec{
   it should "test result" in {
     val taxiFacts = getTaxiFacts(spark)
 
-    def actualDistribution = getResult(taxiFacts)
+    def actualDistribution = calculatePopularBorough(taxiFacts)
 
     assert(actualDistribution.isInstanceOf[RDD[String]])
     assert(actualDistribution.count() == 24)
@@ -31,7 +31,7 @@ class TaskTwoTest extends AnyFlatSpec{
   }
 
   it should "check on null" in {
-    def tZone = getResult(null)
+    def tZone = calculatePopularBorough(null)
     assertThrows[NullPointerException]{
       tZone != null
     }

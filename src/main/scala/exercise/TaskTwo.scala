@@ -15,12 +15,12 @@ object TaskTwo {
     val spark = SessionBuilder.session()
 
     val taxiFactsRDD = getTaxiFacts(spark)
-    val result = getResult(taxiFactsRDD)
+    val result = calculatePopularBorough(taxiFactsRDD)
 
     val file = new File("test.txt")
     val pwText = new PrintWriter(file)
 
-    printer("start write....")
+    printLog("start write....")
     try{
       writer(result, pwText)
     } finally {
@@ -28,7 +28,7 @@ object TaskTwo {
       spark.sparkContext.stop()
       sys.ShutdownHookThread{spark.stop()}
     }
-    printer("Finish")
+    printLog("Finish")
 
   }
 
@@ -43,7 +43,7 @@ object TaskTwo {
     t.substring(11, 13)
   }
 
-  def getResult(res: RDD[Row]) = {
+  def calculatePopularBorough(res: RDD[Row]) = {
     res
       .filter(el => el(1) != null)
       .groupBy(el => getTime(el(1).toString) + ":00")
@@ -59,7 +59,7 @@ object TaskTwo {
     })
   }
 
-  def printer(msg:String): Unit ={
+  def printLog(msg:String): Unit ={
     println("="*20)
     println(msg)
     println("="*20)

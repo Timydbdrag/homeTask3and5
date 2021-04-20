@@ -2,7 +2,7 @@ package exercise
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.scalatest.flatspec.AnyFlatSpec
-import TaskOne.{getRafiFacts, getResult, getTaxiZone}
+import TaskOne.{getRafiFacts, calculatePopularBorough, readDataFromCsv}
 
 class TaskOneTest extends AnyFlatSpec{
   implicit val spark: SparkSession = SparkSession.builder()
@@ -11,10 +11,10 @@ class TaskOneTest extends AnyFlatSpec{
     .getOrCreate()
 
   it should "upload and write data" in {
-    val taxiZones = getTaxiZone(spark)
+    val taxiZones = readDataFromCsv(spark)
     val taxiFacts = getRafiFacts(spark)
 
-    val actualDistribution = getResult(taxiFacts,taxiZones,spark)
+    val actualDistribution = calculatePopularBorough(taxiFacts,taxiZones,spark)
       .collectAsList()
       .get(0)
 
@@ -24,14 +24,14 @@ class TaskOneTest extends AnyFlatSpec{
   }
 
   it should "upload csv to df" in {
-    val taxiZones = getTaxiZone(spark)
+    val taxiZones = readDataFromCsv(spark)
     assert(taxiZones.isInstanceOf[DataFrame])
     assert(taxiZones.count() > 0)
     assert(taxiZones.collectAsList().get(0).get(1) === "EWR")
   }
 
   it should "check on null" in {
-    def tZone = getTaxiZone(null)
+    def tZone = readDataFromCsv(null)
     assertThrows[NullPointerException]{
       tZone != null
     }

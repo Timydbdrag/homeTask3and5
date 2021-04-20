@@ -12,11 +12,11 @@ object TaskOne {
 
     val spark = SessionBuilder.session()
 
-    val taxiZones = getTaxiZone(spark)
+    val taxiZones = readDataFromCsv(spark)
     val taxiFacts = getRafiFacts(spark)
-    val result = getResult(taxiFacts,taxiZones,spark)
+    val result = calculatePopularBorough(taxiFacts,taxiZones,spark)
 
-    printer("start write....")
+    printLog("start write....")
     try{
       writer(result, "outInfo")
     } finally {
@@ -26,11 +26,11 @@ object TaskOne {
       sys.ShutdownHookThread{spark.stop()}
       spark.stop()
     }
-    printer("Finish")
+    printLog("Finish")
 
   }
 
-  def getTaxiZone(spark:SparkSession):DataFrame = {
+  def readDataFromCsv(spark:SparkSession):DataFrame = {
     spark.read
       .option("header", "true")
       .option("inferSchema", "true")
@@ -42,7 +42,7 @@ object TaskOne {
       .parquet(pathParquet)
   }
 
-  def getResult(facts:DataFrame, zones:DataFrame, spark:SparkSession):DataFrame = {
+  def calculatePopularBorough(facts:DataFrame, zones:DataFrame, spark:SparkSession):DataFrame = {
     val columns = Seq("Borough", "count")
     import spark.implicits._
 
@@ -56,7 +56,7 @@ object TaskOne {
     result
   }
 
-  def printer(msg:String): Unit ={
+  def printLog(msg:String): Unit ={
     println("="*20)
     println(msg)
     println("="*20)

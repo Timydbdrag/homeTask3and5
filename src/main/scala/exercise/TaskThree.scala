@@ -23,7 +23,7 @@ object TaskThree {
     val taxiFacts = getTaxiFactsDS(pathParquet, spark)
     val result = getResult(taxiFacts,spark)
 
-    printer("start write....")
+    printLog("start write....")
     try {
       saver(result)
     } finally {
@@ -31,7 +31,7 @@ object TaskThree {
       spark.sparkContext.stop()
       spark.stop()
     }
-    printer("Finish")
+    printLog("Finish")
 
   }
 
@@ -45,7 +45,7 @@ object TaskThree {
       .as[TaxiData]
   }
 
-  def readCSV(path: String)(implicit spark: SparkSession):Dataset[TaxiZones] = {
+  def readDataFromCsv(path: String)(implicit spark: SparkSession):Dataset[TaxiZones] = {
     import spark.implicits._
     spark.read
       .option("header", "true")
@@ -55,7 +55,7 @@ object TaskThree {
 
 
   def getResult(taxiFactsDS: Dataset[TaxiData], spark: SparkSession):Dataset[ResData] = {
-    val taxiZonesDF2 = readCSV("src/main/resources/data/taxi_zones.csv")(spark)
+    val taxiZonesDF2 = readDataFromCsv("src/main/resources/data/taxi_zones.csv")(spark)
 
     import spark.implicits._
 
@@ -94,7 +94,7 @@ object TaskThree {
 
   }
 
-  def printer(msg:String): Unit ={
+  def printLog(msg:String): Unit ={
     println("="*20)
     println(msg)
     println("="*20)
